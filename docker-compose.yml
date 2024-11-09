@@ -1,0 +1,12 @@
+services:
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf # Configuración personalizada
+      - /var/lib/docker/volumes/mosquitto_data:/mosquitto/data # Persistencia de datos
+      - /var/lib/docker/volumes:/mosquitto/log # Logs
