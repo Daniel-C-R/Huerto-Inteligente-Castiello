@@ -10,3 +10,9 @@ services:
       - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf # Configuración personalizada
       - /var/lib/docker/volumes/mosquitto_data:/mosquitto/data # Persistencia de datos
       - /var/lib/docker/volumes:/mosquitto/log # Logs
+    networks:
+      - huerto-network
+
+networks:
+  huerto-network:
+    driver: bridge
