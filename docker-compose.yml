@@ -12,6 +12,11 @@ services:
       - /var/lib/docker/volumes:/mosquitto/log # Logs
     networks:
       - huerto-network
+  python-consumer:
+    build: ./python-consumer
+    container_name: python-consumer
+    networks:
+      - huerto-network
 
 networks:
   huerto-network:
