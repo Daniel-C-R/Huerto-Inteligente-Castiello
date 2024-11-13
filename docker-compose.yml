@@ -11,13 +11,13 @@ services:
       - /var/lib/docker/volumes/mosquitto_data:/mosquitto/data # Persistencia de datos
       - /var/lib/docker/volumes:/mosquitto/log # Logs
     networks:
-      - huerto-network
+      - container-network
   python-consumer:
     build: ./python-consumer
     container_name: python-consumer
     networks:
-      - huerto-network
+      - container-network
 
 networks:
-  huerto-network:
+  container-network:
     driver: bridge
