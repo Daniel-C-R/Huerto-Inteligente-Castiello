@@ -7,6 +7,8 @@ RUN pip install --no-cache-dir paho-mqtt
 # Copiar el código del consumidor
 WORKDIR /app
 COPY consumer.py ./
+COPY database.py ./
+COPY init_db.sql ./
 
 # Ejecutar el consumidor
 CMD ["python", "-u", "consumer.py"]

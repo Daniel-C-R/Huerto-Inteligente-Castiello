@@ -1,4 +1,6 @@
 import paho.mqtt.client as mqtt
+from database import insert_row
+from json import loads
 
 
 broker = 'mosquitto'
@@ -19,8 +21,11 @@ def connect_mqtt():
 
 
 def on_message(client, userdata, msg):
+    json = msg.payload.decode()
     print(
-        f'Recibido desde {msg.topic} el siguiente mensaje: {msg.payload.decode()}')
+        f'Recibido desde {msg.topic} el siguiente mensaje: {json}')
+    data = loads(json)
+    insert_row(msg.topic.split('/')[1], *data.values())
 
 
 def susbcribe(client, topic):
