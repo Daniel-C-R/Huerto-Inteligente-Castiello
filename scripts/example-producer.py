@@ -1,6 +1,7 @@
 import paho.mqtt.client as mqtt
 from datetime import datetime
 from json import dumps
+from time import sleep
 
 broker = 'localhost'
 port = 1883
@@ -35,12 +36,13 @@ for i in range(10):
     temperature = {
         'controller_id': i,
         'timestamp': str(datetime.now()),
-        'humidity': i,
+        'temperature': i,
     }
-    publish(client, 'huerto/humidity', humidity)
+    publish(client, 'huerto/temperature', temperature)
     pressure = {
         'controller_id': i,
         'timestamp': str(datetime.now()),
-        'temperature': i,
+        'pressure': i,
     }
-    publish(client, 'huerto/humidity', humidity)
+    sleep(0.01)
+    publish(client, 'huerto/pressure', pressure)
