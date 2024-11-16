@@ -9,7 +9,8 @@ port = 1883
 topics = [
     'huerto/humidity',
     'huerto/temperature',
-    'huerto/pressure'
+    'huerto/pressure',
+    'huerto/altitude',
 ]
 
 
