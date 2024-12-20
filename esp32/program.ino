@@ -33,6 +33,11 @@ const int daylightOffset_sec = 3600; // UTC+2 en horario de verano
 // Configuración del sensor BME280
 Adafruit_BME280 bme;
 
+// Configuración del sensor de humedad del suelo
+#define SOIL_MOISTURE_PIN A0 // Pin analógico donde conectas el sensor
+const int MOISTURE_AIR = 2634; // Valor leído en suelo seco
+const int MOISTURE_WATER = 1289;    // Valor leído en suelo húmedo
+
 // Cliente WiFi y MQTT
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -84,7 +89,7 @@ void reconnect() {
 // Función para construir y publicar datos JSON
 void publishData(const char* topic, float value, const char* key) {
   StaticJsonDocument<200> jsonDoc;
-  jsonDoc["controller_id"] = 1;
+  jsonDoc["controller_id"] = 2;
   jsonDoc["timestamp"] = getTimestamp();
   jsonDoc[key] = value;
 
@@ -126,6 +131,9 @@ void setup() {
     Serial.println(F("No se pudo encontrar un sensor BME280 válido, ¡verifica el cableado!"));
     while (1);
   }
+
+  // Configuración del pin de humedad del suelo
+  pinMode(SOIL_MOISTURE_PIN, INPUT);
 }
 
 void loop() {
@@ -140,16 +148,21 @@ void loop() {
   if (now - lastMsg > 5000) {
     lastMsg = now;
 
-    // Leer datos reales del BME280
+    // Leer datos del BME280
     float temperature = bme.readTemperature();
     float pressure = bme.readPressure() / 100.0F; // Conversión a hPa
     float altitude = bme.readAltitude(1013.25);  // Ajusta según la presión local
-    float humidity = bme.readHumidity();
+
+    // Leer datos de humedad del suelo
+    int analogValue = analogRead(SOIL_MOISTURE_PIN);
+    Serial.println(analogValue);
+    float soilMoisture = map(analogValue, MOISTURE_AIR, MOISTURE_WATER, 0, 100);
+    soilMoisture = constrain(soilMoisture, 0, 100); // Limitar a valores entre 0 y 100%
 
     // Publicar datos en formato JSON
     publishData("huerto/temperature", temperature, "temperature");
     publishData("huerto/pressure", pressure, "pressure");
     publishData("huerto/altitude", altitude, "altitude");
-    publishData("huerto/humidity", humidity, "humidity");
+    publishData("huerto/humidity", soilMoisture, "humidity");
   }
 }
