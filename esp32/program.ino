@@ -22,7 +22,8 @@ const char* topics[] = {
   "huerto/temperature",
   "huerto/pressure",
   "huerto/altitude",
-  "huerto/humidity"
+  "huerto/humidity",
+  "huerto/soil_moisture"
 };
 
 // Configuración de la hora para España
@@ -152,6 +153,7 @@ void loop() {
     float temperature = bme.readTemperature();
     float pressure = bme.readPressure() / 100.0F; // Conversión a hPa
     float altitude = bme.readAltitude(1013.25);  // Ajusta según la presión local
+    float humidity = bme.readHumidity();
 
     // Leer datos de humedad del suelo
     int analogValue = analogRead(SOIL_MOISTURE_PIN);
@@ -163,6 +165,7 @@ void loop() {
     publishData("huerto/temperature", temperature, "temperature");
     publishData("huerto/pressure", pressure, "pressure");
     publishData("huerto/altitude", altitude, "altitude");
-    publishData("huerto/humidity", soilMoisture, "humidity");
+    publishData("huerto/humidity", humidity, "humidity");
+    publishData("huerto/soil_moisture", soilMoisture, "soil_moisture");
   }
 }

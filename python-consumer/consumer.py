@@ -11,6 +11,7 @@ topics = [
     'huerto/temperature',
     'huerto/pressure',
     'huerto/altitude',
+    'huerto/soil_moisture',
 ]
 
 
