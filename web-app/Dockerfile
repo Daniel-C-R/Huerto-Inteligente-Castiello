@@ -2,7 +2,7 @@
 FROM python:3.9-slim
 
 # Instala dependencias necesarias
-RUN pip install --no-cache-dir streamlit pandas matplotlib
+RUN pip install --no-cache-dir streamlit pandas plotly
 
 # Copia la aplicación al contenedor
 WORKDIR /app
