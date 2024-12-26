@@ -10,11 +10,11 @@
 #define I2C_SDA 21
 
 // Configuración de la red WiFi
-const char* ssid = "--";
-const char* password = "--";
+const char* ssid = "CAMBIAR";
+const char* password = "CAMBIAR";
 
 // Configuración del broker MQTT
-const char* mqtt_server = "--"; // IP del broker MQTT
+const char* mqtt_server = "CAMBIAR"; // IP del broker MQTT
 const int mqtt_port = 1883;               // Puerto del broker MQTT
 
 // Temas para publicar
@@ -167,5 +167,12 @@ void loop() {
     publishData("huerto/altitude", altitude, "altitude");
     publishData("huerto/humidity", humidity, "humidity");
     publishData("huerto/soil_moisture", soilMoisture, "soil_moisture");
+
+    // Decisión de riego
+    if (soilMoisture < 70 || (temperature > 25 && soilMoisture < 85)) {
+      rgbLedWrite(RGB_BUILTIN, RGB_BRIGHTNESS, 0, 0); 
+    } else {
+      rgbLedWrite(RGB_BUILTIN, 0, RGB_BRIGHTNESS, 0);
+    }
   }
 }
