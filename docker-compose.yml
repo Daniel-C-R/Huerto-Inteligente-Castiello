@@ -2,7 +2,7 @@ services:
   mosquitto:
     image: eclipse-mosquitto
     container_name: mosquitto
-    restart: unless-stopped
+    restart: always
     ports:
       - "1883:1883"
       - "9001:9001"
@@ -15,6 +15,9 @@ services:
   python-consumer:
     build: ./python-consumer
     container_name: python-consumer
+    depends_on:
+      - mosquitto
+    restart: always
     volumes:
       - ~/huertodb:/db
     networks:
@@ -22,7 +25,7 @@ services:
   web-app:
     build: ./web-app
     container_name: web-app
-    restart: unless-stopped
+    restart: always
     ports:
       - "8501:8501"
     volumes:
