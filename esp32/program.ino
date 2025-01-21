@@ -17,20 +17,6 @@ const char* password = "CAMBIAR";
 const char* mqtt_server = "CAMBIAR"; // IP del broker MQTT
 const int mqtt_port = 1883;               // Puerto del broker MQTT
 
-// Temas para publicar
-const char* topics[] = {
-  "huerto/temperature",
-  "huerto/pressure",
-  "huerto/altitude",
-  "huerto/humidity",
-  "huerto/soil_moisture"
-};
-
-// Configuración de la hora para España
-const char* ntpServer = "pool.ntp.org";
-const long gmtOffset_sec = 3600; // UTC+1 para España peninsular
-const int daylightOffset_sec = 3600; // UTC+2 en horario de verano
-
 // Configuración del sensor BME280
 Adafruit_BME280 bme;
 
@@ -57,18 +43,6 @@ void setup_wifi() {
   Serial.println(" Conectado a WiFi");
 }
 
-// Obtener timestamp en formato "YYYY-MM-DD HH:MM:SS"
-String getTimestamp() {
-  struct tm timeinfo;
-  if (!getLocalTime(&timeinfo)) {
-    Serial.println("Error obteniendo la hora.");
-    return "1970-01-01 00:00:00"; // Valor por defecto si no hay tiempo válido
-  }
-  char buffer[20];
-  strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &timeinfo);
-  return String(buffer);
-}
-
 void reconnect() {
   while (!client.connected()) {
     Serial.print("Intentando conectar al broker MQTT...");
@@ -91,7 +65,6 @@ void reconnect() {
 void publishData(const char* topic, float value, const char* key) {
   StaticJsonDocument<200> jsonDoc;
   jsonDoc["controller_id"] = 2;
-  jsonDoc["timestamp"] = getTimestamp();
   jsonDoc[key] = value;
 
   char jsonBuffer[200];
@@ -104,25 +77,10 @@ void publishData(const char* topic, float value, const char* key) {
   Serial.println(jsonBuffer);
 }
 
-void printLocalTime() {
-  struct tm timeinfo;
-  if (!getLocalTime(&timeinfo)) {
-    Serial.println("Error obteniendo la hora.");
-    return;
-  }
-  Serial.println(&timeinfo, "%Y-%m-%d %H:%M:%S");
-}
-
 void setup() {
   Serial.begin(115200);
 
   setup_wifi();
-
-  // Configurar el servidor NTP para obtener la hora
-  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-
-  // Mostrar la hora local después de sincronizar
-  printLocalTime();
 
   client.setServer(mqtt_server, mqtt_port);
 
@@ -168,11 +126,5 @@ void loop() {
     publishData("huerto/humidity", humidity, "humidity");
     publishData("huerto/soil_moisture", soilMoisture, "soil_moisture");
 
-    // Decisión de riego
-    if (soilMoisture < 70 || (temperature > 25 && soilMoisture < 85)) {
-      rgbLedWrite(RGB_BUILTIN, RGB_BRIGHTNESS, 0, 0); 
-    } else {
-      rgbLedWrite(RGB_BUILTIN, 0, RGB_BRIGHTNESS, 0);
-    }
   }
 }

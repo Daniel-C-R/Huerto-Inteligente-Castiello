@@ -1,7 +1,7 @@
 import paho.mqtt.client as mqtt
 from database import insert_row
 from json import loads
-
+from datetime import datetime
 
 broker = 'mosquitto'
 port = 1883
@@ -24,10 +24,18 @@ def connect_mqtt():
 
 def on_message(client, userdata, msg):
     json = msg.payload.decode()
-    print(
-        f'Recibido desde {msg.topic} el siguiente mensaje: {json}')
+
+    # Decodificar el mensaje JSON
     data = loads(json)
-    insert_row(msg.topic.split('/')[1], *data.values())
+
+    # Añadir el timestamp actual
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    print(f'Recibido desde {msg.topic} con timestamp {current_time} el siguiente mensaje: {json}')
+
+    # Llamar a la función para insertar en la base de datos
+    values = [*data.values()]
+    insert_row(msg.topic.split('/')[1], values[0], current_time, values[1])
 
 
 def susbcribe(client, topic):
