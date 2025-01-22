@@ -64,10 +64,15 @@ void setupWiFi() {
 
 // Conexión al broker de MQTT
 void connectMQTT() {
+  // Hay que poner un identificador de conexión único a cada microcontrolador
+  // para que el broker los distinga
+  String clientId = "ESP32Client-";
+  clientId += CONTROLLER_ID;
+  
   Serial.println("Conectando al broker de MQTT...");
 
   while (!client.connected()) {
-    if (client.connect("ESP32Client")) {
+    if (client.connect(clientId.c_str())) {
       Serial.print("\nConectado al broker MQTT con dirección: ");
       Serial.println(MQTT_SERVER);
     } else {
